@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG戦略・WBS - Copilot 365 / Zendesk AI統合</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary-green: #4caf50;
+            --dark-green: #388e3c;
+            --light-green: #c8e6c9;
+            --bg-light: #e8f5e9;
+            --text-dark: #2c3e50;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-green);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-green);
+            transition: var(--transition);
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-green);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        h2 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            color: var(--dark-green);
+            border-left: 5px solid var(--primary-green);
+            padding-left: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            color: var(--dark-green);
+            margin: 1.5rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            color: var(--dark-green);
+            margin: 1rem 0 0.5rem;
+        }
+
+        /* Content Boxes */
+        .concept-box, .problem-box, .solution-box, .poc-box {
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            border-left: 5px solid;
+            transition: var(--transition);
+        }
+
+        .concept-box {
+            background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
+            border-color: #81c784;
+        }
+
+        .problem-box {
+            background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
+            border-color: #e57373;
+        }
+
+        .solution-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-color: #66bb6a;
+        }
+
+        .poc-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #2196f3;
+        }
+
+        .concept-box:hover, .problem-box:hover, .solution-box:hover, .poc-box:hover {
+            transform: translateX(5px);
+        }
+
+        /* Mermaid Container */
+        .mermaid-container {
+            background: #fafafa;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--light-green) 0%, #a5d6a7 100%);
+            color: var(--dark-green);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        /* WBS Items */
+        .wbs-phase {
+            background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e9 100%);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary-green);
+            transition: var(--transition);
+        }
+
+        .wbs-phase:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow);
+        }
+
+        .wbs-item {
+            background: #e0f2f1;
+            margin-bottom: 0.8rem;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            border-left: 4px solid #009688;
+            transition: var(--transition);
+        }
+
+        .wbs-item:hover {
+            transform: translateX(5px);
+            background: #b2dfdb;
+        }
+
+        /* Lists */
+        ul {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Links */
+        a.reference-link {
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            border-bottom: 1px solid transparent;
+        }
+
+        a.reference-link:hover {
+            color: #0d47a1;
+            border-bottom-color: #1976d2;
+        }
+
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .scroll-top:hover {
+            background: var(--dark-green);
+            transform: translateY(-3px);
+        }
+
+        .scroll-top.visible {
+            display: flex;
+        }
+
+        /* Footer */
+        footer {
+            background: white;
+            margin-top: 3rem;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+            color: #666;
+        }
+
+        /* Collapsible Sections */
+        .collapsible-header {
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .collapsible-header::before {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .collapsible-header.collapsed::before {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            max-height: 5000px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.collapsed {
+            max-height: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                right: 0;
+                background: white;
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow);
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: var(--transition);
+            }
+
+            .nav-menu.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+
+            .container {
+                margin-top: 80px;
+                padding: 0 15px;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .table-container {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .nav-container,
+            .scroll-top {
+                display: none;
+            }
+
+            .container {
+                margin-top: 0;
+            }
+
+            .section {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            a.reference-link::after {
+                content: " (" attr(href) ")";
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(76, 175, 80, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-green);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav-container" role="navigation" aria-label="Main navigation">
+    <div class="nav-content">
+        <div class="nav-title">RAG戦略・WBS</div>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            ☰
+        </button>
+        <ul class="nav-menu" role="menubar">
+            <li role="none"><a href="#section-1" role="menuitem">現状と解決策</a></li>
+            <li role="none"><a href="#section-2" role="menuitem">データ資産</a></li>
+            <li role="none"><a href="#section-3" role="menuitem">アーキテクチャ</a></li>
+            <li role="none"><a href="#section-4" role="menuitem">統合図</a></li>
+            <li role="none"><a href="#section-5" role="menuitem">WBS</a></li>
+            <li role="none"><a href="#section-6" role="menuitem">ロードマップ</a></li>
+            <li role="none"><a href="#section-7" role="menuitem">PoC提案</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+
+    <header>
+        <h1>RAG戦略・WBS</h1>
+        <p>Copilot 365 / Zendesk AI統合による継続学習システム構築</p>
+    </header>
+
+    <section class="section" id="section-1">
+        <h2>📊 1. 現状の課題と解決策</h2>
+
+        <div class="problem-box">
+            <h3>⚠️ 現状の課題</h3>
+            <ul>
+                <li><strong>Zendesk問い合わせ対応の工数増大:</strong> エスカレーション発生時に、UC（ユーザーケア）が手動で返信を作成するため、多くの時間とリソースを消費</li>
+                <li><strong>知識の分散:</strong> 企業内のナレッジがSharePoint、Zendesk、メールなど複数の場所に散在し、統合的な活用が困難</li>
+                <li><strong>回答品質のばらつき:</strong> 担当者によって回答の質や一貫性に差が生じる</li>
+                <li><strong>学習の非効率性:</strong> 過去の成功事例や失敗事例が体系化されず、同じ問題を繰り返し解決する必要がある</li>
+            </ul>
+        </div>
+
+        <div class="solution-box">
+            <h3>✅ RAG + フィードバックによる解決策</h3>
+            <p>参考: <a href="https://zenn.dev/wed_engineering/articles/uc_support_ai" class="reference-link" target="_blank">RAGとフィードバックを活用した継続学習する返信生成サービス</a></p>
+            <ul>
+                <li><strong>自動返信生成:</strong> 過去の問い合わせデータと企業ナレッジをRAGで検索し、高品質な返信を自動生成</li>
+                <li><strong>継続的改善:</strong> 生成された回答に対するフィードバック（絵文字リアクション、コメント）を収集し、システムの品質を継続的に向上</li>
+                <li><strong>統合データ活用:</strong> SharePoint、Zendesk、社内DBを統合したRAG基盤により、全社の知識資産を有効活用</li>
+                <li><strong>Copilot 365 / Zendesk AI統合:</strong> 既存のMicrosoft 365とZendesk環境にシームレスに統合</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="section-2">
+        <h2>💾 2. データ資産の理解</h2>
+
+        <div class="concept-box">
+            <h3>📊 構造化データと非構造化データ</h3>
+            <p>RAGシステムを構築するためには、企業内のデータを「構造化データ」と「非構造化データ」に分類し、それぞれの特性に応じた処理が必要です。</p>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>データ種類</th>
+                        <th>データソース例</th>
+                        <th>用途・特徴</th>
+                        <th>RAGでの活用方法</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>構造化データ</strong></td>
+                        <td>Snowflake、CRM、社内DB、Excel</td>
+                        <td>顧客情報、取引履歴、売上データなど、表形式で整理されたデータ</td>
+                        <td>検索結果の補足情報として活用。直接的な回答生成には非構造化データが主</td>
+                    </tr>
+                    <tr>
+                        <td><strong>非構造化データ</strong></td>
+                        <td>SharePoint文書、Zendeskチケット、メール、PDF、Word、マニュアル</td>
+                        <td>自然言語で書かれた文書、過去の問い合わせ履歴、ナレッジベース</td>
+                        <td>RAGの主要なデータソース。Embedding化してVector DBに保存し、意味検索に活用</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="concept-box">
+            <h3>🔗 自社データとRAGの統合</h3>
+            <p>構造化データと非構造化データを統合的に活用することで、より正確で文脈に富んだ回答を生成できます。例えば、Zendeskの過去チケットから類似事例を検索し、Snowflakeの顧客情報を補足情報として追加することで、パーソナライズされた回答が可能になります。</p>
+        </div>
+    </section>
+
+    <section class="section" id="section-3">
+        <h2>🏗️ 3. RAG + フィードバック アーキテクチャ図</h2>
+
+        <div class="concept-box">
+            <h3>🔄 継続学習システムの全体フロー</h3>
+            <p>以下の3つのフェーズで構成される継続的に学習・改善するRAGシステムです。</p>
+        </div>
+
+        <div class="mermaid-container">
+            <div class="mermaid">
+flowchart TB
+    subgraph DataPrep [準備フェーズ]
+        ZD[Zendesk<br/>問い合わせ・返信] -->|定期転送| BQ[BigQuery<br/>Vector DB]
+        SP[SharePoint<br/>ドキュメント] -->|同期| BQ
+        BQ -->|Embedding| VEC[ベクトル化<br/>ML.GENERATE_EMBEDDING]
+    end
+    subgraph Generation [返信生成フェーズ]
+        NEW[新規問い合わせ] -->|Webhook| API[FastAPI<br/>返信生成API]
+        API -->|VECTOR_SEARCH| VEC
+        VEC -->|類似検索結果<br/>過去の問い合わせ・返信| LLM[Azure OpenAI<br/>/ Gemini]
+        LLM -->|生成回答| SLACK[Slack/Teams<br/>通知]
+    end
+    subgraph Feedback [フィードバック収集フェーズ]
+        SLACK -->|絵文字リアクション<br/>コメント| FB[フィードバック<br/>収集API]
+        FB -->|品質改善データ| BQ
+        BQ -.->|学習ループ| VEC
+    end
+
+    style DataPrep fill:#e8f5e9
+    style Generation fill:#e3f2fd
+    style Feedback fill:#fff3e0
+            </div>
+        </div>
+
+        <h3 class="collapsible-header">各フェーズの詳細</h3>
+        <div class="collapsible-content">
+            <div class="wbs-phase">
+                <h4>📥 準備フェーズ</h4>
+                <ul>
+                    <li>Zendeskから問い合わせと返信のペアデータを定期的にBigQueryに転送</li>
+                    <li>SharePointのドキュメントを同期し、Vector DBに保存</li>
+                    <li>ML.GENERATE_EMBEDDING関数を使用してテキストをベクトル化</li>
+                    <li>ベクトル化されたデータをVector DBに保存（検索用インデックス構築）</li>
+                </ul>
+            </div>
+
+            <div class="wbs-phase">
+                <h4>🤖 返信生成フェーズ</h4>
+                <ul>
+                    <li>Slack/TeamsからのWebhookで新規問い合わせを受信</li>
+                    <li>VECTOR_SEARCH機能を使用して、新規問い合わせに類似する過去の問い合わせ・返信を検索</li>
+                    <li>検索結果（Good/Badフィードバック付き）をプロンプトに追加</li>
+                    <li>Azure OpenAIまたはGeminiを使用して回答を生成</li>
+                    <li>生成された回答をSlack/Teamsに投稿</li>
+                    <li>生成された回答をBigQueryに保存・ベクトル化（次回検索に活用）</li>
+                </ul>
+            </div>
+
+            <div class="wbs-phase">
+                <h4>📈 フィードバック収集フェーズ</h4>
+                <ul>
+                    <li>Slackの絵文字リアクション（👍/👎など）とコメントをWebhookで受信</li>
+                    <li>フィードバックデータをBigQueryに保存</li>
+                    <li>次回の検索時に、Goodフィードバックの回答を優先的に参照</li>
+                    <li>Badフィードバックの回答を分析し、改善点を学習</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="section-4">
+        <h2>🔌 4. Copilot 365 / Zendesk AI 統合図</h2>
+
+        <div class="concept-box">
+            <h3>🏢 企業向け統合アーキテクチャ</h3>
+            <p>Microsoft 365（Copilot）とZendesk AIを、共通のRAG基盤で統合することで、全社の知識資産を効率的に活用できます。</p>
+        </div>
+
+        <div class="mermaid-container">
+            <div class="mermaid">
+flowchart LR
+    subgraph Microsoft365 [Microsoft 365 エコシステム]
+        SP2[SharePoint<br/>ナレッジベース]
+        Teams[Teams<br/>コラボレーション]
+        CP[Copilot 365<br/>AIアシスタント]
+        Outlook[Outlook<br/>メール]
+    end
+    subgraph ZendeskStack [Zendesk エコシステム]
+        ZDT[Zendesk<br/>チケット管理]
+        ZAI[Zendesk AI<br/>AIアシスタント]
+        ZKB[Zendesk<br/>ナレッジベース]
+    end
+    subgraph SharedRAG [共通RAG基盤]
+        VDB[Vector DB<br/>BigQuery / Azure AI Search]
+        EMB[Embedding<br/>サービス]
+        LLM2[LLM<br/>Azure OpenAI]
+    end
+    subgraph DataSources [データソース]
+        SF[Snowflake<br/>構造化データ]
+        DB[社内DB<br/>CRM等]
+    end
+
+    SP2 --> VDB
+    ZDT --> VDB
+    ZKB --> VDB
+    Outlook --> VDB
+    SF --> VDB
+    DB --> VDB
+
+    VDB --> EMB
+    EMB --> LLM2
+
+    LLM2 --> CP
+    LLM2 --> ZAI
+
+    CP --> Teams
+    ZAI --> ZDT
+
+    style Microsoft365 fill:#e3f2fd
+    style ZendeskStack fill:#fff3e0
+    style SharedRAG fill:#e8f5e9
+    style DataSources fill:#f3e5f5
+            </div>
+        </div>
+
+        <h3>統合のメリット</h3>
+        <ul style="list-style: none; padding-left: 0;">
+            <li class="wbs-item"><strong>一元化された知識管理:</strong> SharePoint、Zendesk、社内DBの知識を1つのVector DBに統合し、全社で共有</li>
+            <li class="wbs-item"><strong>シームレスな連携:</strong> Copilot 365とZendesk AIが同じ知識ベースを参照するため、回答の一貫性が向上</li>
+            <li class="wbs-item"><strong>権限管理の継承:</strong> 元のデータソース（SharePoint等）のアクセス権限をRAGシステムが継承し、セキュリティを維持</li>
+            <li class="wbs-item"><strong>コスト効率:</strong> 共通基盤により、インフラコストと運用コストを削減</li>
+        </ul>
+    </section>
+
+    <section class="section" id="section-5">
+        <h2>📋 5. WBS（Work Breakdown Structure）</h2>
+
+        <div class="concept-box">
+            <h3>📋 プロジェクトの主要フェーズ</h3>
+            <p>RAGシステム構築を4つのフェーズに分解し、各フェーズの主要タスクを明確化します。</p>
+        </div>
+
+        <div class="wbs-phase">
+            <h3>フェーズ1: 準備（Preparation）</h3>
+            <ul>
+                <li><strong>要件定義:</strong> ビジネス要件、技術要件、セキュリティ要件の明確化</li>
+                <li><strong>データ棚卸し:</strong> 構造化/非構造化データの洗い出し、データ品質評価</li>
+                <li><strong>権限設計:</strong> データアクセス権限のマッピング、RAGシステムへの権限継承設計</li>
+                <li><strong>技術選定:</strong> Vector DB（BigQuery / Azure AI Search）、LLM（Azure OpenAI / Gemini）の選定</li>
+                <li><strong>PoCスコープ定義:</strong> 対象データ、ユースケース、成功指標の設定</li>
+            </ul>
+        </div>
+
+        <div class="wbs-phase">
+            <h3>フェーズ2: 構築（Development）</h3>
+            <ul>
+                <li><strong>Vector DB構築:</strong> BigQueryまたはAzure AI Searchのセットアップ、スキーマ設計</li>
+                <li><strong>Embedding パイプライン開発:</strong> データ転送、チャンキング、ベクトル化の自動化</li>
+                <li><strong>RAG API開発:</strong> FastAPIまたはAzure Functionsでの返信生成API実装</li>
+                <li><strong>検索ロジック実装:</strong> VECTOR_SEARCH機能の実装、類似度閾値の調整</li>
+                <li><strong>プロンプトエンジニアリング:</strong> LLMへのプロンプト設計、Few-shot学習の実装</li>
+            </ul>
+        </div>
+
+        <div class="wbs-phase">
+            <h3>フェーズ3: 統合（Integration）</h3>
+            <ul>
+                <li><strong>Zendesk連携:</strong> Zendesk API連携、Webhook設定、Zendesk AI統合</li>
+                <li><strong>Copilot 365連携:</strong> Microsoft Graph API連携、SharePoint同期、Copilot拡張機能開発</li>
+                <li><strong>Slack/Teams通知:</strong> 返信生成結果の通知機能、フィードバック収集機能</li>
+                <li><strong>フィードバックループ実装:</strong> フィードバック収集API、学習データの自動更新</li>
+                <li><strong>モニタリング・ロギング:</strong> システム監視、エラーハンドリング、パフォーマンス計測</li>
+            </ul>
+        </div>
+
+        <div class="wbs-phase">
+            <h3>フェーズ4: 運用・改善（Operations & Improvement）</h3>
+            <ul>
+                <li><strong>PoC実施:</strong> 限定ユーザーでのテスト運用、フィードバック収集</li>
+                <li><strong>品質評価:</strong> 正答率、ハルシネーション発生率、ユーザー満足度の測定</li>
+                <li><strong>継続改善:</strong> フィードバックに基づくプロンプト調整、チャンキング戦略の最適化</li>
+                <li><strong>本番展開:</strong> 全社展開、スケーリング、コスト最適化</li>
+                <li><strong>ドキュメント整備:</strong> 運用マニュアル、トラブルシューティングガイドの作成</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section" id="section-6">
+        <h2>📅 6. ロードマップ（3ヶ月PoC）</h2>
+
+        <div class="concept-box">
+            <h3>📅 タイムライン</h3>
+            <p>PoC（Proof of Concept）を3ヶ月で実施し、本番展開の判断材料を取得します。</p>
+        </div>
+
+        <div class="mermaid-container">
+            <div class="mermaid">
+gantt
+    title RAG PoC ロードマップ（3ヶ月）
+    dateFormat YYYY-MM-DD
+    section 準備フェーズ
+    要件定義・データ棚卸し           :a1, 2025-01-01, 2w
+    権限設計・技術選定               :a2, after a1, 1w
+    section 構築フェーズ
+    Vector DB構築・セットアップ      :b1, after a2, 2w
+    Embedding パイプライン開発       :b2, after b1, 2w
+    RAG API開発・検索ロジック        :b3, after b2, 2w
+    section 統合フェーズ
+    Zendesk連携実装                  :c1, after b3, 2w
+    Copilot 365連携実装              :c2, after c1, 2w
+    Slack/Teams通知・FB収集         :c3, after c2, 1w
+    section 検証フェーズ
+    PoC実施・テスト運用              :d1, after c3, 2w
+    品質評価・改善                   :d2, after d1, 1w
+    評価レポート作成                 :d3, after d2, 1w
+            </div>
+        </div>
+
+        <h3>マイルストーン</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>マイルストーン</th>
+                        <th>時期</th>
+                        <th>成果物</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>M1: 要件定義完了</strong></td>
+                        <td>2週間後</td>
+                        <td>要件定義書、データマップ、技術選定資料</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M2: プロトタイプ完成</strong></td>
+                        <td>7週間後</td>
+                        <td>動作するRAG API、Vector DB構築完了</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M3: 統合完了</strong></td>
+                        <td>12週間後</td>
+                        <td>Zendesk/Copilot連携、フィードバックループ動作</td>
+                    </tr>
+                    <tr>
+                        <td><strong>M4: PoC評価完了</strong></td>
+                        <td>15週間後</td>
+                        <td>評価レポート、本番展開判断資料</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="section" id="section-7">
+        <h2>🎯 7. PoC提案</h2>
+
+        <div class="poc-box">
+            <h3>🎯 PoCスコープ</h3>
+            <h4>対象データ</h4>
+            <ul>
+                <li><strong>Zendesk:</strong> 過去6ヶ月の問い合わせチケットと返信（約1,000件）</li>
+                <li><strong>SharePoint:</strong> カスタマーサポート関連のナレッジベース（FAQ、マニュアル等）</li>
+                <li><strong>構造化データ:</strong> 顧客基本情報（Snowflake）を補足情報として活用</li>
+            </ul>
+
+            <h4>ユースケース</h4>
+            <ul>
+                <li><strong>主要ユースケース:</strong> Zendeskチケットへの自動返信生成</li>
+                <li><strong>補助ユースケース:</strong> Copilot 365での社内ナレッジ検索</li>
+                <li><strong>対象ユーザー:</strong> カスタマーサポートチーム（10名程度）</li>
+            </ul>
+        </div>
+
+        <div class="poc-box">
+            <h3>📊 成功指標（KPI）</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>指標</th>
+                            <th>目標値</th>
+                            <th>測定方法</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>返信作成時間削減率</strong></td>
+                            <td>50%以上</td>
+                            <td>生成前後の平均作成時間を比較</td>
+                        </tr>
+                        <tr>
+                            <td><strong>正答率</strong></td>
+                            <td>90%以上</td>
+                            <td>専門家による回答品質評価</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ハルシネーション発生率</strong></td>
+                            <td>5%以下</td>
+                            <td>事実誤認の検出数 / 総生成数</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ユーザー満足度</strong></td>
+                            <td>4.0/5.0以上</td>
+                            <td>フィードバック絵文字の平均値</td>
+                        </tr>
+                        <tr>
+                            <td><strong>システム応答時間</strong></td>
+                            <td>5秒以内</td>
+                            <td>問い合わせ受信から回答生成までの時間</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="poc-box">
+            <h3>👥 必要リソース</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>役割</th>
+                            <th>人数</th>
+                            <th>主な責務</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>プロジェクトマネージャー</strong></td>
+                            <td>1名</td>
+                            <td>全体統括、ステークホルダー管理、進捗管理</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MLエンジニア</strong></td>
+                            <td>2名</td>
+                            <td>RAGパイプライン開発、Embedding実装、LLM統合</td>
+                        </tr>
+                        <tr>
+                            <td><strong>バックエンドエンジニア</strong></td>
+                            <td>2名</td>
+                            <td>API開発、データパイプライン構築、統合実装</td>
+                        </tr>
+                        <tr>
+                            <td><strong>データエンジニア</strong></td>
+                            <td>1名</td>
+                            <td>データ転送、Vector DB構築、データ品質管理</td>
+                        </tr>
+                        <tr>
+                            <td><strong>QAエンジニア</strong></td>
+                            <td>1名</td>
+                            <td>テスト設計、品質評価、フィードバック分析</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ビジネスアナリスト</strong></td>
+                            <td>1名</td>
+                            <td>要件定義、KPI設定、評価レポート作成</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="poc-box">
+            <h3>🔄 フィードバック収集メカニズム</h3>
+            <p>Zenn記事を参考にした継続学習システム:</p>
+            <ul>
+                <li><strong>Slack絵文字リアクション:</strong> 👍 (5点) / 👎 (1点) など、5段階評価でフィードバックを収集</li>
+                <li><strong>コメントフィードバック:</strong> 具体的な改善点をコメントで収集</li>
+                <li><strong>自動学習:</strong> Goodフィードバック（4-5点）の回答を次回検索で優先参照</li>
+                <li><strong>改善サイクル:</strong> Badフィードバック（1-3点）の回答を分析し、プロンプトやチャンキング戦略を改善</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Nanobanana Project Management Office. All rights reserved.</p>
+        <p>参考: <a href="https://zenn.dev/wed_engineering/articles/uc_support_ai" class="reference-link" target="_blank">RAGとフィードバックを活用した継続学習する返信生成サービス</a></p>
+    </footer>
+</div>
+
+<!-- Scroll to Top Button -->
+<button class="scroll-top" aria-label="Scroll to top">↑</button>
+
+<script>
+    // Initialize Mermaid
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'default',
+        securityLevel: 'loose'
+    });
+
+    // Mobile Navigation Toggle
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+
+    navToggle.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+        const isExpanded = navMenu.classList.contains('active');
+        navToggle.setAttribute('aria-expanded', isExpanded);
+    });
+
+    // Close menu when clicking a link
+    navMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+            navToggle.setAttribute('aria-expanded', 'false');
+        });
+    });
+
+    // Smooth Scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const offsetTop = target.offsetTop - 80;
+                window.scrollTo({
+                    top: offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Scroll to Top Button
+    const scrollTopBtn = document.querySelector('.scroll-top');
+
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            scrollTopBtn.classList.add('visible');
+        } else {
+            scrollTopBtn.classList.remove('visible');
+        }
+
+        // Navbar shadow on scroll
+        const nav = document.querySelector('.nav-container');
+        if (window.pageYOffset > 0) {
+            nav.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        } else {
+            nav.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        }
+    });
+
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+
+    // Collapsible Sections
+    document.querySelectorAll('.collapsible-header').forEach(header => {
+        header.addEventListener('click', () => {
+            header.classList.toggle('collapsed');
+            const content = header.nextElementSibling;
+            if (content && content.classList.contains('collapsible-content')) {
+                content.classList.toggle('collapsed');
+            }
+        });
+    });
+
+    // Add intersection observer for fade-in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe all sections
+    document.querySelectorAll('.section').forEach(section => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(section);
+    });
+
+    // Print optimization
+    window.addEventListener('beforeprint', () => {
+        document.querySelectorAll('.collapsible-content').forEach(content => {
+            content.classList.remove('collapsed');
+        });
+    });
+</script>
+
+</body>
+</html>
