@@ -1,0 +1,335 @@
+@import "tailwindcss";
+
+/* PRADAスタイル グローバルCSS */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: #FFFFFF;
+  color: #000000;
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-weight: 400;
+}
+
+/* PRADAスタイル ボタン */
+.prada-button {
+  border: 1px solid #000000;
+  background: transparent;
+  color: #000000;
+  padding: 12px 24px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.prada-button:hover:not(:disabled) {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.prada-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prada-button-primary {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.prada-button-primary:hover:not(:disabled) {
+  background: transparent;
+  color: #000000;
+}
+
+/* PRADAスタイル 入力フィールド */
+.prada-input {
+  width: 100%;
+  border: 1px solid #EEEEEE;
+  background: #FFFFFF;
+  padding: 12px 16px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.prada-input:focus {
+  outline: none;
+  border-color: #000000;
+}
+
+.prada-textarea {
+  width: 100%;
+  border: 1px solid #EEEEEE;
+  background: #FFFFFF;
+  padding: 12px 16px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 100px;
+  transition: border-color 0.2s;
+}
+
+.prada-textarea:focus {
+  outline: none;
+  border-color: #000000;
+}
+
+.prada-select {
+  width: 100%;
+  border: 1px solid #EEEEEE;
+  background: #FFFFFF;
+  padding: 12px 16px;
+  padding-right: 40px;
+  font-size: 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000000' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s;
+}
+
+.prada-select:focus {
+  outline: none;
+  border-color: #000000;
+}
+
+/* PRADAスタイル ラベル */
+.prada-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+}
+
+/* PRADAスタイル カード */
+.prada-card {
+  border: 1px solid #EEEEEE;
+  background: #FFFFFF;
+  padding: 20px;
+}
+
+/* PRADAスタイル アコーディオン */
+.prada-accordion {
+  border: 1px solid #000000;
+}
+
+.prada-accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  background: #FFFFFF;
+  transition: background 0.2s;
+}
+
+.prada-accordion-header:hover {
+  background: #F9F9F9;
+}
+
+.prada-accordion-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+.prada-accordion-icon {
+  font-size: 20px;
+  font-weight: 300;
+}
+
+.prada-accordion-content {
+  padding: 16px;
+  border-top: 1px solid #000000;
+}
+
+/* グリッドレイアウト */
+.prada-grid-4 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+@media (min-width: 768px) {
+  .prada-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .prada-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.prada-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+@media (min-width: 1024px) {
+  .prada-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ウィザードステップ */
+.wizard-step {
+  padding: 20px;
+}
+
+.wizard-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #EEEEEE;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+/* プレビュースタイル */
+.preview-container {
+  border: 1px solid #EEEEEE;
+  background: #F9F9F9;
+  padding: 20px;
+  overflow: auto;
+  max-height: calc(100vh - 200px);
+}
+
+/* 言語切り替えボタン */
+.language-toggle {
+  display: inline-flex;
+  gap: 8px;
+  border: 1px solid #000000;
+}
+
+.language-toggle-button {
+  padding: 8px 16px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  background: #FFFFFF;
+  color: #000000;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.language-toggle-button:hover {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+.language-toggle-button.active {
+  background: #000000;
+  color: #FFFFFF;
+}
+
+/* ドラッグ&ドロップ */
+.draggable-item {
+  border: 1px solid #EEEEEE;
+  background: #FFFFFF;
+  padding: 16px;
+  margin-bottom: 8px;
+  cursor: move;
+  transition: border-color 0.2s;
+}
+
+.draggable-item:hover {
+  border-color: #000000;
+}
+
+.draggable-item.dragging {
+  opacity: 0.5;
+}
+
+/* フォームグループ */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group-inline {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .form-group-inline {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* エラーメッセージ */
+.error-message {
+  color: #DC2626;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* ヘルプテキスト */
+.help-text {
+  color: #6B7280;
+  font-size: 12px;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* セパレーター */
+.prada-separator {
+  border-top: 1px solid #EEEEEE;
+  margin: 20px 0;
+}
+
+/* ヘッダー */
+.prada-header {
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  margin-bottom: 20px;
+}
+
+.prada-subheader {
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 16px;
+}
+
+/* レスポンシブヘルパー */
+.container-prada {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* テキストユーティリティ */
+.text-prada {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* スペーシング */
+.gap-prada {
+  gap: 15px;
+}
+
+.p-prada {
+  padding: 20px;
+}
