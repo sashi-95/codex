@@ -10,6 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        border: 'rgba(255, 255, 255, 0.15)',
         // Background Layers
         background: {
           primary: '#0D0E12',

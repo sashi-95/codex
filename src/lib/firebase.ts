@@ -11,17 +11,20 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
+const isConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.projectId);
 
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApps()[0];
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+
+if (isConfigured) {
+  try {
+    app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+    auth = getAuth(app);
+    db = getFirestore(app);
+  } catch (e) {
+    console.warn('Firebase initialization failed:', (e as Error).message);
+  }
 }
 
-auth = getAuth(app);
-db = getFirestore(app);
-
-export { app, auth, db };
+export { app, auth, db, isConfigured };

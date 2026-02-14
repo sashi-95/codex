@@ -1,9 +1,6 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { Sidebar } from '@/components/layout/Sidebar';
-
-const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'NextGen Analytics Portal - Powered by SAP × Snowflake',
@@ -17,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>
+      <body className="font-sans">
         <div className="flex min-h-screen">
           <Sidebar />
           <main className="flex-1 ml-64 p-8 custom-scrollbar overflow-y-auto">
