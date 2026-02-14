@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { DollarSign, TrendingUp, TrendingDown, Percent } from 'lucide-react';
 import { DashboardHeader } from '@/components/layout/DashboardHeader';
