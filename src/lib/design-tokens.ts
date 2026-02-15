@@ -144,3 +144,30 @@ export const designTokens = {
 } as const;
 
 export type DesignTokens = typeof designTokens;
+
+/**
+ * トレーディング専用カラーパレット
+ * Judas Swing Sniper / ICT Smart Money Concepts
+ * designTokens との統合ブリッジ
+ */
+export const tradingColors = {
+  // Primary Trading Colors
+  green: '#00C805',       // Bullish / Success
+  pink: '#FF6AC1',        // Bearish / Sell-side
+  gold: '#D4AF37',        // Execution / Key levels
+  cyan: '#00f2ff',        // Reversal signals
+  blue: '#3b82f6',        // ES / Secondary line
+
+  // Mapped from designTokens (semantic aliases)
+  bullish: designTokens.colors.status.success,
+  bearish: designTokens.colors.status.error,
+  warning: designTokens.colors.status.warning,
+  info: designTokens.colors.status.info,
+
+  // Surface
+  bgDeep: '#0a0c10',
+  bgPanel: '#0E1116',
+  bgHeader: '#151921',
+} as const;
+
+export type TradingColors = typeof tradingColors;
