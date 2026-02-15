@@ -27,7 +27,8 @@ export function ContextPanel({ isExpanded, onToggle, smtDivergence, patternRefSl
         onClick={onToggle}
         aria-expanded={isExpanded}
         aria-controls="judas-context-panel"
-        className="h-12 w-full flex items-center px-6 hover:bg-white/[0.02] transition-colors group relative z-30 bg-background-primary"
+        aria-label="コンテキストパネルを開閉 (Ctrl+Shift+C)"
+        className="h-12 w-full flex items-center px-6 hover:bg-white/[0.02] transition-colors group relative z-30 bg-background-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
       >
         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] mr-8 group-hover:text-zinc-300 transition-colors">
           Context Logic

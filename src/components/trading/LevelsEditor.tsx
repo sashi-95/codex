@@ -27,7 +27,9 @@ export function LevelsEditor({ levels, expanded, onToggle, onChangeLevel }: Leve
         type="button"
         onClick={onToggle}
         aria-expanded={expanded}
-        className="w-full px-3 py-2 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+        aria-controls="levels-expanded-content"
+        aria-label={expanded ? 'Levelsパネルを閉じる' : 'Levelsパネルを開く'}
+        className="w-full px-3 py-2 flex items-center justify-between text-left hover:bg-white/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
       >
         <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">Levels</span>
         <span className="text-zinc-500 text-xs">{expanded ? '\u2212' : '+'}</span>
@@ -36,6 +38,7 @@ export function LevelsEditor({ levels, expanded, onToggle, onChangeLevel }: Leve
       <AnimatePresence>
         {expanded && (
           <motion.div
+            id="levels-expanded-content"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -54,6 +57,7 @@ export function LevelsEditor({ levels, expanded, onToggle, onChangeLevel }: Leve
                       'w-full bg-white/5 border border-glass-border rounded py-1 px-2',
                       'text-[10px] font-mono text-white',
                       'focus:border-[#D4AF37] outline-none transition-colors',
+                      'focus-visible:ring-2 focus-visible:ring-[#D4AF37]',
                     )}
                   />
                 </div>

@@ -164,6 +164,21 @@ export const tradingColors = {
   warning: designTokens.colors.status.warning,
   info: designTokens.colors.status.info,
 
+  // Pattern Diagram (JudasPatternRef)
+  long: '#00C805',                     // Long model expansion
+  short: '#FF6AC1',                    // Short model expansion
+  manipulation: '#666666',             // Fakeout / manipulation phase
+  pdl: '#FF5C5C',                      // PDL reference line
+  bsl: '#FF5C5C',                      // BSL reference line
+  entryZoneFill: 'rgba(0,200,5,0.12)', // FVG zone fill (long)
+  entryZoneStroke: 'rgba(0,200,5,0.4)',// FVG zone border
+  entryZoneFillShort: 'rgba(255,106,193,0.12)',
+  entryZoneStrokeShort: 'rgba(255,106,193,0.4)',
+  grid: 'rgba(255,255,255,0.06)',      // Chart grid
+  axis: '#555555',                     // Axis text
+  tpLine: '#00C805',                   // Take profit
+  slLine: '#FF5C5C',                   // Stop loss
+
   // Surface
   bgDeep: '#0a0c10',
   bgPanel: '#0E1116',

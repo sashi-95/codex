@@ -5,17 +5,13 @@
  *
  * 分割されたサブコンポーネントを組み合わせる統括コンポーネント。
  * ビジネスロジックは useJudasStore / useEntryChecklist に集約。
- * 旧モノリシック版 (V4) からの主な改善点：
  *
- * - コンポーネント分割 (BiasHeader, ExecutionProtocol, PriceChart, ContextPanel 等)
- * - Zustand による状態管理
- * - Framer Motion アニメーション統合
- * - design-tokens / GlassCard / cn() によるデザインシステム準拠
- * - TypeScript 型の厳密化
- * - アクセシビリティ (aria-expanded, aria-label 等)
+ * V5.1 追加:
+ * - キーボードショートカット (Ctrl+Shift+1..4, S, E, C)
+ * - アクセシビリティ (aria-label, aria-checked, aria-expanded, focus-visible)
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect, useCallback } from 'react';
 import { Crosshair } from 'lucide-react';
 
 import { useJudasStore } from '@/stores/useJudasStore';
@@ -74,8 +70,56 @@ export const JudasSniper = memo<JudasSniperProps>(({ isKillzoneActive, smtDiverg
   const rrRatio = riskPts > 0 ? (levels.pdh - entryMid) / riskPts : 0;
 
   // ── Handlers ──
-  const handleSaveSetup = () => saveSetupLog(currentPrice, verdict);
-  const handleLogEntry = () => logEntry(currentPrice);
+  const handleSaveSetup = useCallback(() => saveSetupLog(currentPrice, verdict), [saveSetupLog, currentPrice, verdict]);
+  const handleLogEntry = useCallback(() => logEntry(currentPrice), [logEntry, currentPrice]);
+
+  // ── Keyboard Shortcuts ──
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (!e.ctrlKey || !e.shiftKey) return;
+
+      switch (e.key) {
+        case '1':
+        case '!':
+          e.preventDefault();
+          toggleStep(EXECUTION_CHECKLIST[0].id); // HTF Bias Confirmation
+          break;
+        case '2':
+        case '@':
+          e.preventDefault();
+          toggleStep(EXECUTION_CHECKLIST[1].id); // DXY/SMT Divergence
+          break;
+        case '3':
+        case '#':
+          e.preventDefault();
+          toggleStep(EXECUTION_CHECKLIST[2].id); // 09:30 Judas Swing
+          break;
+        case '4':
+        case '$':
+          e.preventDefault();
+          toggleStep(EXECUTION_CHECKLIST[3].id); // 09:45 FVG / MSS
+          break;
+        case 'S':
+        case 's':
+          e.preventDefault();
+          if (!isSyncing) handleSaveSetup();
+          break;
+        case 'E':
+        case 'e':
+          e.preventDefault();
+          handleLogEntry();
+          break;
+        case 'C':
+        case 'c':
+          e.preventDefault();
+          toggleContext();
+          break;
+      }
+    };
+
+    addEventListener('keydown', handler);
+    return () => removeEventListener('keydown', handler);
+  }, [toggleStep, toggleContext, isSyncing, handleSaveSetup, handleLogEntry]);
 
   // ── Pattern Ref Slot ──
   const patternRefSlot = (
@@ -142,7 +186,9 @@ export const JudasSniper = memo<JudasSniperProps>(({ isKillzoneActive, smtDiverg
 
         {/* Right: Chart & Candles */}
         <div className="col-span-12 lg:col-span-7 flex flex-col min-h-0 space-y-4">
-          <PriceChart marketTicks={marketTicks} />
+          <div role="img" aria-label="NQ/ES 1分足チャート" className="w-full">
+            <PriceChart marketTicks={marketTicks} />
+          </div>
           <CandleSnapshots />
         </div>
       </div>

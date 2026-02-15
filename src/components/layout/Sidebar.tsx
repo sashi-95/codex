@@ -13,6 +13,7 @@ import {
   Users,
   Sparkles,
   FileText,
+  Crosshair,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +24,7 @@ const navItems = [
   { href: '/inventory', label: 'Inventory', icon: Package },
   { href: '/sales', label: 'Sales', icon: TrendingUp },
   { href: '/hr', label: 'HR & Timesheet', icon: Users },
+  { href: '/trading', label: 'Judas Sniper', icon: Crosshair },
   { href: '/insights', label: 'AI Insights', icon: Sparkles },
   { href: '/reports', label: 'Auto Reports', icon: FileText },
 ];

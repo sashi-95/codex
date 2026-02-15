@@ -52,10 +52,12 @@ export function ExecutionProtocol({
           type="button"
           onClick={onSaveSetup}
           disabled={isSyncing}
+          aria-label="セットアップログを保存 (Ctrl+Shift+S)"
           title="Save setup to local log. Future: Google Sheets."
           className={cn(
             'flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/20',
             'px-4 py-2 rounded-full text-xs transition-all shrink-0 disabled:opacity-60',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]',
           )}
         >
           <Save size={14} className={isSyncing ? 'animate-pulse' : ''} />
@@ -83,15 +85,17 @@ export function ExecutionProtocol({
                 variants={staggerItem}
                 className={cn(
                   'flex items-start gap-3 p-3 hover:bg-white/5 rounded-lg cursor-pointer transition-colors border-l-4',
+                  'focus-within:ring-2 focus-within:ring-[#D4AF37]',
                   checked ? 'bg-[#00C805]/5 border-[#00C805]' : 'border-transparent',
                 )}
               >
                 <input
                   type="checkbox"
-                  className="mt-1 accent-[#D4AF37]"
+                  className="mt-1 accent-[#D4AF37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
                   checked={checked}
                   onChange={() => onToggleStep(step.id)}
-                  aria-label={`Mark ${step.label} as complete`}
+                  aria-checked={checked}
+                  aria-label={`${step.label}: ${step.desc}`}
                 />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-bold text-white">{step.label}</div>

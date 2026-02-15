@@ -52,9 +52,11 @@ export function EntryConditions({ conditions, logFeedback, onLogEntry }: EntryCo
       <button
         type="button"
         onClick={onLogEntry}
+        aria-label="エントリーログを記録 (Ctrl+Shift+E)"
         className={cn(
           'mt-3 w-full py-2 rounded-lg bg-white/10 hover:bg-white/15',
           'border border-white/20 text-[10px] font-black uppercase text-white transition-colors',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]',
         )}
       >
         Log entry (no order sent)
