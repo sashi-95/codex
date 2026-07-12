@@ -120,6 +120,13 @@ src/support-agent/
 └── kb.ts            # ナレッジベース (Zendesk Guide相当)
 ```
 
+## バックオフィスAI (SAP × M365 × Python)
+
+実スタック (SAP BTP Joule / オンプレSAP / SharePoint / Power Apps / Power Automate)
+向けの全体設計は `docs/BACKOFFICE_AI_ARCHITECTURE.md`、
+Python製ランタイムのリファレンス実装は `python/` を参照
+(`cd python && python3 demo.py` で請求書処理フローのデモが動く)。
+
 ## ダッシュボードポータル
 
 このリポジトリには Next-Gen Dashboard & Reporting Portal (Finance / Sales / HR / Inventory 等) も含まれます。詳細は `DESIGN_SPECIFICATION.md` を参照。
