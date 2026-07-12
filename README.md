@@ -120,6 +120,11 @@ src/support-agent/
 └── kb.ts            # ナレッジベース (Zendesk Guide相当)
 ```
 
+## SAP GUI自動化 (VBS × Power Automate Desktop)
+
+FI/SD/MMの取引コード別自動化カタログは `docs/SAP_GUI_VBS_AUTOMATION_CATALOG.md`、
+VBS実装 (FB60/FBL1N/VA01/ME2N + 共通ライブラリ) とPAD統合ガイドは `sapgui-vbs/` を参照。
+
 ## バックオフィスAI (SAP × M365 × Python)
 
 実スタック (SAP BTP Joule / オンプレSAP / SharePoint / Power Apps / Power Automate)
