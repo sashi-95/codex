@@ -100,6 +100,26 @@ src/app/agent-os/page.tsx       # ミッションコントロールUI
 src/app/api/agent-os/*/route.ts # カーネルAPI
 ```
 
+## Support Ops — Zendesk自律型エージェント (プロトタイプ)
+
+`docs/ZENDESK_AI_AGENT_DESIGN.md` の設計に基づくオーケストレーション層の実装。
+`/support-ops` でデモUIが動作します。
+
+- **Webhook受理** (`/api/support/webhook`): 冪等キーで重複配送を検出
+- **L1 FAQ**: KBベクトル検索 → 出典付き自動回答。低確信度は推測せずエスカレーション
+- **転記業務**: 住所変更 (L1) はCRMへ自動write + 読み戻し検証。返金 (L2) は金額をERPレコードから取得し、¥10,000超はHITL承認で一時停止
+- **ガードレール**: 本人確認 (メール一致) をコードで強制、インテント別ツールアロウリスト、インジェクション検知、PIIリダクション
+- **監査ログ**: 全ツール呼び出しの入出力を記録
+
+```
+src/support-agent/
+├── types.ts         # チケット / Run / 承認 / 監査の型定義
+├── engine.ts        # オーケストレーションエンジン (実行フロー / HITL / 検証)
+├── policies.ts      # リスク階層・アロウリスト・金額上限 (コードで強制する層)
+├── mock-systems.ts  # Mock Zendesk / CRM / ERP (本番では実APIに差し替え)
+└── kb.ts            # ナレッジベース (Zendesk Guide相当)
+```
+
 ## ダッシュボードポータル
 
 このリポジトリには Next-Gen Dashboard & Reporting Portal (Finance / Sales / HR / Inventory 等) も含まれます。詳細は `DESIGN_SPECIFICATION.md` を参照。
