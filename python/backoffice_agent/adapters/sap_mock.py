@@ -40,6 +40,13 @@ class SapAdapter:
         self._doc_seq = 5100000000
         # 転記済み請求書の業務キー (重複転記の遮断に使用)
         self._posted_invoice_keys: set[str] = set()
+        # 支払実績 (レポート抽出デモ用シード。本番はRFCで都度照会)
+        self._payments: list[dict] = [
+            {"period": "2026-06", "vendor": "株式会社アルファ商事", "amount_jpy": 120_000, "count": 3},
+            {"period": "2026-06", "vendor": "ベータ物流株式会社", "amount_jpy": 480_000, "count": 2},
+            {"period": "2026-06", "vendor": "ガンマ興産株式会社", "amount_jpy": 66_000, "count": 1},
+            {"period": "2026-05", "vendor": "株式会社アルファ商事", "amount_jpy": 95_000, "count": 2},
+        ]
 
     # ---- 参照系 (RFC読み取り相当) ----
 
@@ -52,6 +59,14 @@ class SapAdapter:
     def read_document(self, document_no: str) -> PostedDocument | None:
         """読み戻し検証用。本番ではBAPIで転記した伝票をRFCで読み直す。"""
         return self._documents.get(document_no)
+
+    def list_vendor_payments(self, period: str) -> list[dict]:
+        """ベンダー別支払実績 (本番: RFC READ_TABLE / OData)"""
+        return [p for p in self._payments if p["period"] == period]
+
+    def list_open_pos(self) -> list[PurchaseOrder]:
+        """未消込POの一覧 (本番: BAPI_PO_GETITEMS等)"""
+        return [po for po in self._pos.values() if po.open_amount_jpy > 0]
 
     # ---- 更新系 (BAPI_ACC_DOCUMENT_POST相当) ----
 
