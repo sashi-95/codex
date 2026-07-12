@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { TrendingUp, Target, Users, DollarSign } from 'lucide-react';
 import { DashboardHeader } from '@/components/layout/DashboardHeader';
@@ -179,7 +181,7 @@ export default function SalesPage() {
         {/* Today's Performance */}
         <GlassCard className="p-6">
           <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span>📈</span> Today's Performance
+            <span>📈</span> Today&apos;s Performance
           </h3>
 
           <div className="mb-6">

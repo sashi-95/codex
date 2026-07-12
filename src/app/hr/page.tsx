@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Users } from 'lucide-react';
 import { DashboardHeader } from '@/components/layout/DashboardHeader';

@@ -13,6 +13,7 @@ import {
   Users,
   Sparkles,
   FileText,
+  Cpu,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: '/hr', label: 'HR & Timesheet', icon: Users },
   { href: '/insights', label: 'AI Insights', icon: Sparkles },
   { href: '/reports', label: 'Auto Reports', icon: FileText },
+  { href: '/agent-os', label: 'Agent OS', icon: Cpu },
 ];
 
 /**
