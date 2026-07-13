@@ -79,7 +79,7 @@ Assessment / Sprint / Enterprise Sprint / Monthly Support の4カード
 
 ### 4.5 Pricing `/pricing`
 pricing.md §1の表 + 価格決定原則の要約 + ROIの考え方
-(「月40時間×$50 = 年$24,000。Sprintは約8ヶ月で回収」の例)。
+(正準例: 月40時間を8割自動化→月$2,080削減→Sprintは約7ヶ月で回収・保守別)。
 FAQ 5問 (前金・スコープ変更・保守・環境要件・LLMのデータ取扱)。
 
 ### 4.6 About `/about`
